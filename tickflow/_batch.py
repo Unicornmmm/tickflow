@@ -58,6 +58,9 @@ def batched_get_sync(
     if not symbols:
         return {}
 
+    if isinstance(symbols, str):
+        symbols = symbols.split(",")
+
     chunks = _chunk_list(symbols, batch_size)
     _merge = merge or _default_merge
 
@@ -102,6 +105,9 @@ async def batched_get_async(
     """Async variant of :func:`batched_get_sync`."""
     if not symbols:
         return {}
+
+    if isinstance(symbols, str):
+        symbols = symbols.split(",")
 
     chunks = _chunk_list(symbols, batch_size)
     _merge = merge or _default_merge
