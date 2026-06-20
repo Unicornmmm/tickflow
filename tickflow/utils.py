@@ -11,12 +11,6 @@ symbol_suffix_region_map = {
     "BJ": "CN",
     "US": "US",
     "HK": "HK",
-    "SHF": "CN",
-    "DCE": "CN",
-    "ZCE": "CN",
-    "CFX": "CN",
-    "INE": "CN",
-    "GFE": "CN",
 }
 
 region_timezone_map = {

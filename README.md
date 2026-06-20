@@ -7,7 +7,7 @@
 [![GitHub Stars](https://img.shields.io/github/stars/tickflow-org/tickflow.svg?style=social&label=Star&maxAge=60)](https://github.com/tickflow-org/tickflow)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-TickFlow Python SDK 是 TickFlow 行情数据 API 的官方 Python 客户端，支持 A 股、ETF、美股、港股、国内期货等。
+TickFlow Python SDK 是 TickFlow 行情数据 API 的官方 Python 客户端，支持 A 股、ETF、美股、港股等。
 
 > **完整文档**：<https://docs.tickflow.org>
 
@@ -146,7 +146,6 @@ for q in quotes:
   - 股票：`600000.SH`（浦发银行）、`000001.SZ`（平安银行）、`920662.BJ`（方盛股份）
   - ETF：`510300.SH`（沪深 300 ETF）、`159915.SZ`（创业板 ETF）
   - 指数：`000001.SH`（上证指数）、`399006.SZ`（创业板指数）
-  - 期货：`au2604.SHF`（上期所黄金主力合约）、`i2605.DCE`（大商所铁矿石主力合约）等
 
 代码部分使用交易所官方代码（如 6 位 A 股代码、合约代码等），**市场后缀**见下表。
 
@@ -157,19 +156,12 @@ for q in quotes:
 | **SH** | 上海证券交易所 | 沪市 A 股、ETF、债券等 |
 | **SZ** | 深圳证券交易所 | 深市 A 股、创业板、ETF 等 |
 | **BJ** | 北京证券交易所 | 北交所股票 |
-| **SHF** | 上海期货交易所 | 上期所期货 |
-| **DCE** | 大连商品交易所 | 大商所期货 |
-| **ZCE** | 郑州商品交易所 | 郑商所期货 |
-| **CFX** | 中国金融期货交易所 | 中金所股指/国债期货 |
-| **INE** | 上海国际能源交易中心 | 原油等期货 |
-| **GFE** | 广州期货交易所 | 广期所期货 |
 | **US** | 美股 | 美国证券市场 |
 | **HK** | 港股 | 香港联交所 |
 
 ### 目前支持状态
 
 - **A 股（SH / SZ / BJ）**：已支持。可查实时行情、日 K、分钟 K、日内分时、财务数据、标的池（如 `CN_Equity_A`）等。
-- **国内期货（SHF / DCE / ZCE / CFX / INE / GFE）**：支持主力合约查询。按合约代码 + 后缀查询（如 `au2604.SHF`）。
 - **美股（US）**：已支持。实时行情、全量历史日 K 线（支持前复权/后复权）、除权因子、标的池（`US_Equity`）。
 - **港股（HK）**：已支持。实时行情、全量历史日 K 线（支持前复权/后复权）、除权因子、标的池（`HK_Equity`）。
 
