@@ -278,6 +278,34 @@ quotes_etf = tf.quotes.get(universes=["CN_ETF"], as_dataframe=True)
 print(quotes_etf)
 ```
 
+### 使用 AKShare 替代内置 WebSocket
+
+AKShare 提供的是行情快照而不是 WebSocket。SDK 可以定时拉取快照，并继续通过
+TickFlow 原有的 `stream` 回调接口输出结果。该模式不需要 TickFlow API Key，当前
+支持沪深京 A 股的 `quotes` 频道。
+
+```bash
+pip install "tickflow[akshare]"
+```
+
+```python
+from tickflow import TickFlow
+
+tf = TickFlow(stream_provider="akshare", stream_poll_interval=3)
+
+@tf.stream.on_quotes
+def handle(quotes):
+    for quote in quotes:
+        print(quote["symbol"], quote["last_price"])
+
+tf.stream.subscribe("quotes", ["600000.SH", "000001.SZ"])
+tf.stream.connect()
+```
+
+返回记录保持 TickFlow `Quote` 字段，包括 `symbol`、`last_price`、`open`、`high`、
+`low`、`prev_close`、`volume`、`amount`、`timestamp` 和 `ext`。AKShare 模式不支持
+`depth`，且其数据许可、稳定性和延迟由上游公开数据源决定。
+
 ---
 
 ## 异步使用
@@ -333,3 +361,4 @@ asyncio.run(main())
 ## License
 
 MIT
+
