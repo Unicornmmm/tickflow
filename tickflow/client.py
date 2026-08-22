@@ -10,13 +10,14 @@ Both clients provide access to the same resources with consistent method signatu
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+from typing import Any, Literal, Optional
 
 from ._base_client import DEFAULT_MAX_RETRIES, AsyncAPIClient, SyncAPIClient
 from ._cache import InstrumentNameCache
 from ._types import Headers, Timeout
 from .resources import (
     AsyncDepth,
+    AsyncAkshareMarketStream,
     AsyncExchanges,
     AsyncFinancials,
     AsyncInstruments,
@@ -26,6 +27,7 @@ from .resources import (
     AsyncQuoteStream,
     AsyncUniverses,
     Depth,
+    AkshareMarketStream,
     Exchanges,
     Financials,
     Instruments,
@@ -151,7 +153,7 @@ class TickFlow:
     exchanges: Exchanges
     universes: Universes
     financials: Financials
-    stream: MarketStream
+    stream: MarketStream | AkshareMarketStream
 
     def __init__(
         self,
@@ -162,7 +164,18 @@ class TickFlow:
         max_retries: int = DEFAULT_MAX_RETRIES,
         default_headers: Optional[Headers] = None,
         cache_dir: Optional[str] = None,
+        stream_provider: Literal["tickflow", "akshare"] = "tickflow",
+        stream_poll_interval: float = 3.0,
     ) -> None:
+        if (
+            stream_provider == "akshare"
+            and api_key is None
+            and not os.environ.get("TICKFLOW_API_KEY")
+            and base_url is None
+        ):
+            base_url = os.environ.get(
+                "TICKFLOW_FREE_BASE_URL", "https://free-api.tickflow.org"
+            )
         self._client = SyncAPIClient(
             api_key=api_key,
             base_url=base_url,
@@ -179,7 +192,12 @@ class TickFlow:
         self.exchanges = Exchanges(self._client)
         self.universes = Universes(self._client)
         self.financials = Financials(self._client)
-        self.stream = MarketStream(self._client)
+        if stream_provider == "akshare":
+            self.stream = AkshareMarketStream(poll_interval=stream_poll_interval)
+        elif stream_provider == "tickflow":
+            self.stream = MarketStream(self._client)
+        else:
+            raise ValueError("stream_provider must be 'tickflow' or 'akshare'")
         self._realtime: Optional[QuoteStream] = None
 
     @property
@@ -201,6 +219,7 @@ class TickFlow:
         This releases any network resources held by the client.
         Called automatically when using the client as a context manager.
         """
+        self.stream.close()
         self._client.close()
 
     @classmethod
@@ -388,7 +407,7 @@ class AsyncTickFlow:
     exchanges: AsyncExchanges
     universes: AsyncUniverses
     financials: AsyncFinancials
-    stream: AsyncMarketStream
+    stream: AsyncMarketStream | AsyncAkshareMarketStream
 
     def __init__(
         self,
@@ -399,7 +418,18 @@ class AsyncTickFlow:
         max_retries: int = DEFAULT_MAX_RETRIES,
         default_headers: Optional[Headers] = None,
         cache_dir: Optional[str] = None,
+        stream_provider: Literal["tickflow", "akshare"] = "tickflow",
+        stream_poll_interval: float = 3.0,
     ) -> None:
+        if (
+            stream_provider == "akshare"
+            and api_key is None
+            and not os.environ.get("TICKFLOW_API_KEY")
+            and base_url is None
+        ):
+            base_url = os.environ.get(
+                "TICKFLOW_FREE_BASE_URL", "https://free-api.tickflow.org"
+            )
         self._client = AsyncAPIClient(
             api_key=api_key,
             base_url=base_url,
@@ -416,7 +446,12 @@ class AsyncTickFlow:
         self.exchanges = AsyncExchanges(self._client)
         self.universes = AsyncUniverses(self._client)
         self.financials = AsyncFinancials(self._client)
-        self.stream = AsyncMarketStream(self._client)
+        if stream_provider == "akshare":
+            self.stream = AsyncAkshareMarketStream(poll_interval=stream_poll_interval)
+        elif stream_provider == "tickflow":
+            self.stream = AsyncMarketStream(self._client)
+        else:
+            raise ValueError("stream_provider must be 'tickflow' or 'akshare'")
         self._realtime: Optional[AsyncQuoteStream] = None
 
     @property
@@ -438,6 +473,7 @@ class AsyncTickFlow:
         This releases any network resources held by the client.
         Called automatically when using the client as an async context manager.
         """
+        await self.stream.close()
         await self._client.close()
 
     @classmethod
@@ -551,3 +587,4 @@ class AsyncTickFlow:
     def base_url(self) -> str:
         """The base URL for API requests."""
         return self._client.base_url
+
