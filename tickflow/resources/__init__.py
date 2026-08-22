@@ -1,6 +1,7 @@
 """Resource modules for TickFlow API."""
 
 from .depth import AsyncDepth, Depth
+from .akshare_stream import AkshareMarketStream, AsyncAkshareMarketStream
 from .exchanges import AsyncExchanges, Exchanges
 from .financials import AsyncFinancials, Financials
 from .instruments import AsyncInstruments, Instruments
@@ -12,6 +13,8 @@ from .universes import AsyncUniverses, Universes
 
 __all__ = [
     "Depth",
+    "AkshareMarketStream",
+    "AsyncAkshareMarketStream",
     "AsyncDepth",
     "Exchanges",
     "AsyncExchanges",
@@ -30,3 +33,4 @@ __all__ = [
     "Universes",
     "AsyncUniverses",
 ]
+
